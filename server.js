@@ -32,7 +32,7 @@ const addRole = [
   {
     type: "input",
     message: "What is the name of the new Role that you would like to add?",
-    name: "role",
+    name: "name",
   },
   {
     type: "input",
@@ -60,14 +60,26 @@ const addEmployee = [
   },
   {
     type: "list",
-    message: "What is the employees roll?",
-    choices: ["Offense", "Defense", "Special Teams"],
+    message: "What Role would you like to assign to the selected Employee?",
+    choices: [
+      "Quarter Back",
+      "Running Back",
+      "Wide Receiver",
+      "Defensive End",
+      "Linebacker",
+      "Safety",
+      "Kicker",
+      "Punter",
+      "Offensive Coordinator",
+      "Defensive Coordinator",
+      "Special Teams Coordinator",
+    ],
     name: "role",
   },
   {
     type: "list",
     message: "Who is the Employees Manager?",
-    choices: ["Bill Walsh", "Bill Belichick", "Scott O'Brien"],
+    choices: ["None", "Bill Walsh", "Bill Belichick", "Scott O'Brien"],
     name: "manager",
   },
 ];
@@ -76,7 +88,7 @@ const updateEmployee = [
   {
     type: "list",
     message: "Which Employee's role would you like to update?",
-    choces: [
+    choices: [
       "John Elway",
       "Barry Sanders",
       "Jerry Rice",
@@ -175,6 +187,151 @@ function navigation() {
             console.log(
               `${response.department} has been added to Departments!`
             );
+            navigation();
+          }
+        );
+      });
+    }
+    if (response.nav === "Add a Role") {
+      inquirer.prompt(addRole).then((response) => {
+        let deptChoice = 0;
+        if (response.role === "Offense") {
+          deptChoice = 1;
+        } else if (response.role === "Defense") {
+          deptChoice = 2;
+        } else {
+          deptChoice = 3;
+        }
+        db.query(
+          `INSERT INTO role (title, salary, department_id) VALUES 
+            ("${response.name}", ${response.salary}, ${deptChoice});`,
+          function (err, results) {
+            if (err) {
+              console.log(err);
+              throw new Error("Something went wrong!");
+            }
+            console.log(`${response.name} has been added to Roles!`);
+            navigation();
+          }
+        );
+      });
+    }
+    if (response.nav === "Add an Employee") {
+      inquirer.prompt(addEmployee).then((response) => {
+        let roleChoice = 0;
+        if (response.role === "Quarter Back") {
+          roleChoice = 1;
+        } else if (response.role === "Running Back") {
+          roleChoice = 2;
+        } else if (response.role === "Wide Receiver") {
+          roleChoice = 3;
+        } else if (response.role === "Defensive End") {
+          roleChoice = 4;
+        } else if (response.role === "Linebacker") {
+          roleChoice = 5;
+        } else if (response.role === "Safety") {
+          roleChoice = 6;
+        } else if (response.role === "Kicker") {
+          roleChoice = 7;
+        } else if (response.role === "Punter") {
+          roleChoice = 8;
+        } else if (response.role === "Offensive Coordinator") {
+          roleChoice = 9;
+        } else if (response.role === "Defensive Coordinator") {
+          roleChoice = 10;
+        } else {
+          roleChoice = 11;
+        }
+        let managerChoice = 0;
+        if (response.manager === "Bill Walsh") {
+          managerChoice = 9;
+        } else if (response.manager === "Bill Belichick") {
+          managerChoice = 10;
+        } else if (response.manager === "Bill O'Brien") {
+          managerChoice = 11;
+        } else {
+          managerChoice = null;
+        }
+        db.query(
+          `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES 
+              ("${response.first}", "${response.last}", ${roleChoice}, ${managerChoice});`,
+          function (err, results) {
+            if (err) {
+              console.log(err);
+              throw new Error("Something went wrong!");
+            }
+            console.log(`Employee has been added!`);
+            navigation();
+          }
+        );
+      });
+    }
+    if (response.nav === "Update an Employee Role") {
+      inquirer.prompt(updateEmployee).then((response) => {
+        const firstName = response.employee.split(" ")[0];
+        const lasttName = response.employee.split(" ")[1];
+        let roleChoice = 0;
+        let roleSalary = 0;
+        let roleManager = 0;
+        if (response.role === "Quarter Back") {
+          roleChoice = 1;
+          roleSalary = 200000;
+          roleManager = 9;
+        } else if (response.role === "Running Back") {
+          roleChoice = 2;
+          roleSalary = 150000;
+          roleManager = 9;
+        } else if (response.role === "Wide Receiver") {
+          roleChoice = 3;
+          roleSalary = 100000;
+          roleManager = 9;
+        } else if (response.role === "Defensive End") {
+          roleChoice = 4;
+          roleSalary = 160000;
+          roleManager = 10;
+        } else if (response.role === "Linebacker") {
+          roleChoice = 5;
+          roleSalary = 140000;
+          roleManager = 10;
+        } else if (response.role === "Safety") {
+          roleChoice = 6;
+          roleSalary = 100000;
+          roleManager = 10;
+        } else if (response.role === "Kicker") {
+          roleChoice = 7;
+          roleSalary = 60000;
+          roleManager = 11;
+        } else if (response.role === "Punter") {
+          roleChoice = 8;
+          roleSalary = 50000;
+          roleManager = 11;
+        } else if (response.role === "Offensive Coordinator") {
+          roleChoice = 9;
+          roleSalary = 90000;
+          roleManager = null;
+        } else if (response.role === "Defensive Coordinator") {
+          roleChoice = 10;
+          roleSalary = 80000;
+          roleManager = null;
+        } else {
+          roleChoice = 11;
+          roleSalary = 70000;
+          roleManager = null;
+        }
+        db.query(
+          `UPDATE employee 
+            SET first_name = "${firstName}",
+             last_name = "${lasttName}",
+             role_id = ${roleChoice},
+             manager_id = ${roleManager}
+            WHERE first_name = "${firstName}";`,
+          function (err, results) {
+            if (err) {
+              console.log(err);
+              throw new Error("Something went wrong!");
+            }
+
+            console.log(`Employee Role has been updated!`);
             navigation();
           }
         );
