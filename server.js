@@ -161,13 +161,15 @@ function navigation() {
     }
     if (response.nav === "View All Employees") {
       db.query(
-        ` SELECT employee.id AS "Employee id", employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department",
-      role.salary AS "Salary", employee.manager_id AS "Manager"
-      FROM department
-      JOIN role
-      ON department.id=role.department_id
-      JOIN employee
-      ON role.id=employee.role_id`,
+        ` SELECT e.id AS "Employee id", e.first_name AS "First Name", e.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department",
+        role.salary AS "Salary", m.last_name AS "Manager"
+        FROM department
+        JOIN role
+        ON department.id=role.department_id
+        JOIN employee e
+        ON role.id=e.role_id
+        LEFT JOIN employee m
+        ON e.manager_id = m.id`,
         function (err, results) {
           // console.log(results);
           console.table(results);
