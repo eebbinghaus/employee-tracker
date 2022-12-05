@@ -2,6 +2,8 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
 
+//Prompt Questions dependant on user selection
+
 const navQuestion = [
   {
     type: "list",
@@ -123,6 +125,8 @@ const updateEmployee = [
   },
 ];
 
+//Connection to DataBase
+
 const db = mysql.createConnection(
   {
     host: "localhost",
@@ -132,6 +136,8 @@ const db = mysql.createConnection(
   }
   //   console.log(`Connected to the employee_tracker_db database.`)
 );
+
+//Initial Prompt Question When User kicks off the Program
 
 function navigation() {
   inquirer.prompt(navQuestion).then((response) => {
@@ -149,6 +155,9 @@ function navigation() {
         }
       );
     }
+
+    //Querry that allows User to View All Roles
+
     if (response.nav === "View All Roles") {
       db.query(
         `SELECT role.title AS "Job Title", role.id AS "Role id", department.name AS "Department", role.salary AS "Salary" FROM department, role WHERE department.id=role.department_id`,
@@ -159,6 +168,9 @@ function navigation() {
         }
       );
     }
+
+    //Query that allows User to View All Employees
+
     if (response.nav === "View All Employees") {
       db.query(
         ` SELECT e.id AS "Employee id", e.first_name AS "First Name", e.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department",
@@ -177,6 +189,9 @@ function navigation() {
         }
       );
     }
+
+    //Query that adds a Department to DB dependant on user input
+
     if (response.nav === "Add a Department") {
       inquirer.prompt(addPrompt).then((response) => {
         db.query(
@@ -194,6 +209,9 @@ function navigation() {
         );
       });
     }
+
+    //Query that adds a Role to DB dependant on user input
+
     if (response.nav === "Add a Role") {
       inquirer.prompt(addRole).then((response) => {
         let deptChoice = 0;
@@ -218,6 +236,9 @@ function navigation() {
         );
       });
     }
+
+    //Query that adds an Employee to DB dependant on user input
+
     if (response.nav === "Add an Employee") {
       inquirer.prompt(addEmployee).then((response) => {
         let roleChoice = 0;
@@ -268,6 +289,9 @@ function navigation() {
         );
       });
     }
+
+    //Query that allows User to Update an Employee Role
+
     if (response.nav === "Update an Employee Role") {
       inquirer.prompt(updateEmployee).then((response) => {
         const firstName = response.employee.split(" ")[0];
@@ -341,5 +365,7 @@ function navigation() {
     }
   });
 }
+
+//Initialization Function
 
 navigation();
